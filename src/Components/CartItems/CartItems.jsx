@@ -51,7 +51,7 @@ const CartItems = () => {
           <div>
             <div className="cartitems-total-item">
               <p>Subtotal</p>
-              <p>${getTotalCartAmount}</p>
+              <p>${totalPrice}</p>
             </div>
             <hr />
             <div className="cartitems-total-item">
