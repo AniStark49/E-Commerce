@@ -1,11 +1,11 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import all_products from "../Components/Assets/all_product.js";
 
 export const ShopContext = createContext();
 
-
 const ShopContextProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
+  const [totalPrice, setTotalPrice] = useState(0);
 
   const addToCart = (itemID) => {
     const selectedProduct = all_products.find(
@@ -25,6 +25,7 @@ const ShopContextProvider = ({ children }) => {
         setCartItems((prev) => [...prev, { ...selectedProduct, quantity: 1 }]);
       }
     }
+    getTotalCartAmount();
   };
 
   const removeFromCart = (itemID) => {
@@ -33,12 +34,13 @@ const ShopContextProvider = ({ children }) => {
     );
 
     setCartItems(updatedCart.filter((item) => item.quantity > 0));
+     getTotalCartAmount();
   };
 
   const getTotalCartAmount = () => {
-    const totalPrice = cartItems.reduce((acc, item) => {
+    const totalCartPrice = cartItems.reduce((acc, item) => {
       // Check if the item has the 'new_price' property and it's a valid number
-      if (item.new_price && typeof item.new_price === 'number') {
+      if (item.new_price && typeof item.new_price === "number") {
         const productPrice = item.quantity * item.new_price;
         return acc + productPrice;
       } else {
@@ -46,13 +48,14 @@ const ShopContextProvider = ({ children }) => {
         return acc;
       }
     }, 0);
-    return totalPrice;
+    setTotalPrice(totalCartPrice);
   };
-  
-
   const getCartItems = () => {
     return cartItems;
   };
+   useEffect(() => {
+     getTotalCartAmount();
+   }, [cartItems]);
 
   const contextValue = {
     getTotalCartAmount,
@@ -61,6 +64,7 @@ const ShopContextProvider = ({ children }) => {
     addToCart,
     removeFromCart,
     getCartItems,
+    totalPrice,
   };
 
   return (
